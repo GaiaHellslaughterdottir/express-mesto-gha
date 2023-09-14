@@ -26,7 +26,7 @@ module.exports.getUserById = (req, res) => {
       if (user == null) {
         return res.status(404).send({message: 'Такой пользователь не найден'});
       } else {
-        res.send({data: user})
+        return res.send({data: user})
       }
     })
     .catch((err) => {
