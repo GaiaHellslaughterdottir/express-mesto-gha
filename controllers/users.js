@@ -5,7 +5,13 @@ module.exports.postUser = (req, res) => {
 
   User.create({ name, about, avatar })
     .then(user => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: 'Произошла ошибка' + err }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+          return res.status(400).send({ message: 'Данные пользователя введены некорректно' });
+      } else {
+        return res.status(500).send({ message: 'Произошла ошибка ' + err.text });
+      }
+    });
 };
 
 module.exports.getUserList = (req, res) => {
@@ -17,7 +23,7 @@ module.exports.getUserList = (req, res) => {
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.userId)
     .then(user => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: 'Произошла ошибка' + err }));
+    .catch((err) => res.status(500).send({ message: 'Произошла ошибка' + err.name }));
 };
 
 module.exports.updateProfile = (req, res) => {
