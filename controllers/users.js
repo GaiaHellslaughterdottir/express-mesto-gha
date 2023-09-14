@@ -42,7 +42,13 @@ module.exports.updateProfile = (req, res) => {
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { name, about })
-    .then(user => res.send({ data: user }))
+    .then(user => {
+      if (user == null) {
+        return res.status(404).send({ message: 'Такой пользователь не найден' });
+      } else {
+        res.send({ data: user })
+      }
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(400).send({ message: 'Данные пользователя введены некорректно' });
@@ -56,7 +62,13 @@ module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { avatar })
-    .then(user => res.send({ data: user }))
+    .then(user => {
+      if (user == null) {
+        return res.status(404).send({ message: 'Такой пользователь не найден' });
+      } else {
+        res.send({ data: user })
+      }
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(400).send({ message: 'Данные пользователя введены некорректно' });
