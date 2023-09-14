@@ -43,7 +43,13 @@ module.exports.updateProfile = (req, res) => {
 
   User.findByIdAndUpdate(req.user._id, { name, about })
     .then(user => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: 'Произошла ошибка' + err }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return res.status(400).send({ message: 'Данные пользователя введены некорректно' });
+      } else {
+        return res.status(500).send({ message: 'Произошла ошибка ' + err.text });
+      }
+    });
 };
 
 module.exports.updateAvatar = (req, res) => {
@@ -51,5 +57,11 @@ module.exports.updateAvatar = (req, res) => {
 
   User.findByIdAndUpdate(req.user._id, { avatar })
     .then(user => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: 'Произошла ошибка' + err }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return res.status(400).send({ message: 'Данные пользователя введены некорректно' });
+      } else {
+        return res.status(500).send({ message: 'Произошла ошибка ' + err.text });
+      }
+    });
 };
