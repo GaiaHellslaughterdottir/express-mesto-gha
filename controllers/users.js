@@ -23,7 +23,13 @@ module.exports.getUserList = (req, res) => {
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.userId)
     .then(user => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: 'Произошла ошибка' + err.name }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(404).send({ message: 'Такой пользователь не найден' });
+      } else {
+        return res.status(500).send({ message: 'Произошла ошибка ' + err.text });
+      }
+    });
 };
 
 module.exports.updateProfile = (req, res) => {
