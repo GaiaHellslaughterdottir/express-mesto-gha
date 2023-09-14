@@ -1,10 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-
-// Слушаем 3000 порт
+const process = require('process');
 const { PORT = 3000 } = process.env;
-
 
 const app = express();
 
@@ -24,7 +22,9 @@ app.use((req, res, next) => {
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
-
+app.use(function(req, res) {
+  return res.status(404).send();
+});
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`)
