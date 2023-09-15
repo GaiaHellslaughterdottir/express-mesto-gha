@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const process = require('process');
 const { PORT = 3000 } = process.env;
 const app = express();
+const PAGE_NOT_FOUND_ERROR = 404;
 
 mongoose.connect('mongodb://localhost:27017/mestodb', {});
 
@@ -21,7 +22,7 @@ app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
 app.use(function(req, res) {
-  return res.status(404).send({message: 'Такая страница не найдена'});
+  return res.status(PAGE_NOT_FOUND_ERROR).send({message: 'Такая страница не найдена'});
 });
 
 app.listen(PORT, () => {
