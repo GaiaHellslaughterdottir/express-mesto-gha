@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const process = require('process');
+
 const { PORT = 3000 } = process.env;
 const app = express();
 const PAGE_NOT_FOUND_ERROR = 404;
@@ -13,7 +14,7 @@ app.use(bodyParser.urlencoded({ extended: true })); // для приёма
 
 app.use((req, res, next) => {
   req.user = {
-    _id: '65019b15dce31977c97e53d1'
+    _id: '65019b15dce31977c97e53d1',
   };
   next();
 });
@@ -21,10 +22,10 @@ app.use((req, res, next) => {
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
-app.use(function(req, res) {
-  return res.status(PAGE_NOT_FOUND_ERROR).send({message: 'Такая страница не найдена'});
-});
+app.use((req, res) => (
+  res.status(PAGE_NOT_FOUND_ERROR).send({ message: 'Такая страница не найдена' })
+));
 
 app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}`)
+  console.log(`App listening on port ${PORT}`);
 });
