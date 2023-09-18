@@ -1,8 +1,5 @@
+const http2 = require('http2');
 const Card = require('../models/card');
-
-const PAGE_NOT_FOUND_ERROR = 404;
-const BAD_REQUEST_ERROR = 400;
-const INTERNAL_SERVER_ERROR = 500;
 
 module.exports.postCard = (req, res) => {
   const userId = req.user._id;
@@ -12,31 +9,31 @@ module.exports.postCard = (req, res) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(BAD_REQUEST_ERROR).send({ message: 'Данные карточки введены некорректно' });
+        return res.status(http2.constants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Данные карточки введены некорректно' });
       }
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: `Произошла ошибка ${err.text}` });
+      return res.status(http2.constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: `Произошла ошибка ${err.text}` });
     });
 };
 
 module.exports.getCardList = (req, res) => {
   Card.find({})
     .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(INTERNAL_SERVER_ERROR).send({ message: `Произошла ошибка ${err.text}` }));
+    .catch((err) => res.status(http2.constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: `Произошла ошибка ${err.text}` }));
 };
 
 module.exports.deleteCardById = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if ((card) == null) {
-        return res.status(PAGE_NOT_FOUND_ERROR).send({ message: 'Такая карточка не найдена' });
+        return res.status(http2.constants.HTTP_STATUS_NOT_FOUND).send({ message: 'Такая карточка не найдена' });
       }
       return res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(BAD_REQUEST_ERROR).send({ message: 'ID карточки задан не корректно' });
+        return res.status(http2.constants.HTTP_STATUS_BAD_REQUEST).send({ message: 'ID карточки задан не корректно' });
       }
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: `Произошла ошибка ${err.text}` });
+      return res.status(http2.constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: `Произошла ошибка ${err.text}` });
     });
 };
 
@@ -48,15 +45,15 @@ module.exports.likeCard = (req, res) => {
   )
     .then((card) => {
       if ((card) == null) {
-        return res.status(PAGE_NOT_FOUND_ERROR).send({ message: 'Такая карточка не найдена' });
+        return res.status(http2.constants.HTTP_STATUS_NOT_FOUND).send({ message: 'Такая карточка не найдена' });
       }
       return res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(BAD_REQUEST_ERROR).send({ message: 'ID карточки задан не корректно' });
+        return res.status(http2.constants.HTTP_STATUS_BAD_REQUEST).send({ message: 'ID карточки задан не корректно' });
       }
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: `Произошла ошибка ${err.text}` });
+      return res.status(http2.constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: `Произошла ошибка ${err.text}` });
     });
 };
 
@@ -68,14 +65,14 @@ module.exports.dislikeCard = (req, res) => {
   )
     .then((card) => {
       if ((card) == null) {
-        return res.status(PAGE_NOT_FOUND_ERROR).send({ message: 'Такая карточка не найдена' });
+        return res.status(http2.constants.HTTP_STATUS_NOT_FOUND).send({ message: 'Такая карточка не найдена' });
       }
       return res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(BAD_REQUEST_ERROR).send({ message: 'ID карточки задан не корректно' });
+        return res.status(http2.constants.HTTP_STATUS_BAD_REQUEST).send({ message: 'ID карточки задан не корректно' });
       }
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: `Произошла ошибка ${err.text}` });
+      return res.status(http2.constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: `Произошла ошибка ${err.text}` });
     });
 };
