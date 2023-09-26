@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const isEmail = require('validator/lib/isEmail');
 
-const validateEmail = function(email) {
+const validateEmail = function (email) {
   return isEmail(email);
 };
 
