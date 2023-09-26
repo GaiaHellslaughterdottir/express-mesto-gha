@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const process = require('process');
 const http2 = require('http2');
+const { login, postUser } = require('./controllers/users');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -21,6 +22,8 @@ app.use((req, res, next) => {
 
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
+app.use('/signup', postUser);
+app.use('/signin', login);
 
 app.use((req, res) => (
   res.status(http2.constants.HTTP_STATUS_NOT_FOUND).send({ message: 'Такая страница не найдена' })

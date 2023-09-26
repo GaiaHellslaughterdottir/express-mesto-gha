@@ -11,12 +11,12 @@ module.exports.postUser = (req, res) => {
       .then((user) => res.send({ data: user }))
       .catch((err) => {
         if (err.name === 'ValidationError') {
+          console.log(err);
           return res.status(http2.constants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Данные пользователя введены некорректно' });
         }
         return res.status(http2.constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: `Произошла ошибка ${err.text}` });
       }))
-    .then((user) => res.send(user))
-    .catch((err) => res.status(400).send(err));
+    .catch((err) => res.status(http2.constants.HTTP_STATUS_BAD_REQUEST).send(err));
 };
 
 module.exports.getUserList = (req, res) => {

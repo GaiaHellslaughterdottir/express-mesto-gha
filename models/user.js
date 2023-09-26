@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-import isEmail from 'validator/lib/isEmail';
+const isEmail = require('validator/lib/isEmail');
 
 const validateEmail = function(email) {
   return isEmail(email);
@@ -29,8 +29,6 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
-    minlength: 6,
-    maxlength: 30,
   },
   avatar: {
     type: String,
