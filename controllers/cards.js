@@ -32,7 +32,7 @@ module.exports.deleteCardById = (req, res, next) => {
       if ((card) == null) {
         throw new NotFoundError('Такая карточка не найдена');
       }
-      if (card.owner !== req.user._id) {
+      if (card.owner._id !== req.user._id) {
         throw new UnauthorizedError('Доступ запрещён');
       }
       return res.send({ data: card });
