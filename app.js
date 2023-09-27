@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const process = require('process');
 const http2 = require('http2');
+const { errors } = require('celebrate');
 const { login, postUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const UnauthorizedError = require('./errors/unauthorized');
@@ -28,6 +29,8 @@ app.use('/cards', require('./routes/cards'));
 app.use(() => {
   throw new NotFoundError('Такая страница не найдена');
 });
+
+app.use(errors());
 
 app.use((err, req, res, next) => {
   if (err instanceof UnauthorizedError) {
