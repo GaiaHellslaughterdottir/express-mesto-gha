@@ -10,6 +10,7 @@ const UnauthorizedError = require('./errors/unauthorized');
 const BadRequestError = require('./errors/bad-request');
 const NotFoundError = require('./errors/not-found-err');
 const ConflictError = require('./errors/conflict');
+const ForbiddenError = require('./errors/forbidden');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -48,16 +49,19 @@ app.use(errors());
 
 app.use((err, req, res, next) => {
   if (err instanceof UnauthorizedError) {
-    res.status(http2.constants.HTTP_STATUS_UNAUTHORIZED)
+    res.status(err.statusCode)
       .send({ message: err.message });
   } else if (err instanceof BadRequestError) {
-    res.status(http2.constants.HTTP_STATUS_BAD_REQUEST)
+    res.status(err.statusCode)
       .send({ message: err.message });
   } else if (err instanceof NotFoundError) {
-    res.status(http2.constants.HTTP_STATUS_NOT_FOUND)
+    res.status(err.statusCode)
       .send({ message: err.message });
   } else if (err instanceof ConflictError) {
-    res.status(http2.constants.HTTP_STATUS_CONFLICT)
+    res.status(err.statusCode)
+      .send({ message: err.message });
+  } else if (err instanceof ForbiddenError) {
+    res.status(err.statusCode)
       .send({ message: err.message });
   } else {
     res.status(http2.constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
