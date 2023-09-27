@@ -16,9 +16,10 @@ module.exports.postUser = (req, res, next) => {
       name, about, avatar, email, password: hash,
     })
       .then((user) => {
-        const newUser = user._doc;
-        delete newUser.password;
-        res.send({ data: newUser });
+        const fieldName = '_doc';
+        const userData = user[fieldName];
+        delete userData.password;
+        res.send({ data: userData });
       })
       .catch((err) => {
         if (err.name === 'ValidationError') {
