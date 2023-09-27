@@ -1,7 +1,7 @@
 const Card = require('../models/card');
 const BadRequestError = require('../errors/bad-request');
 const NotFoundError = require('../errors/not-found-err');
-const UnauthorizedError = require('../errors/unauthorized');
+const ForbiddenError = require('../errors/forbidden');
 
 module.exports.postCard = (req, res, next) => {
   const userId = req.user._id;
@@ -33,7 +33,7 @@ module.exports.deleteCardById = (req, res, next) => {
         throw new NotFoundError('Такая карточка не найдена');
       }
       if (card.owner._id !== req.user._id) {
-        throw new UnauthorizedError('Доступ запрещён');
+        throw new ForbiddenError('Доступ запрещён');
       }
       return res.send({ data: card });
     })
