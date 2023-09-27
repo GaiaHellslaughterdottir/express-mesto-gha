@@ -30,7 +30,6 @@ app.use(() => {
 });
 
 app.use((err, req, res, next) => {
-  console.log(err);
   if (err instanceof UnauthorizedError) {
     res.status(http2.constants.HTTP_STATUS_UNAUTHORIZED)
       .send({ message: err.message });

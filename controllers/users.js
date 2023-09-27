@@ -21,7 +21,10 @@ module.exports.postUser = (req, res, next) => {
         } else {
           next(err);
         }
-      }));
+      }))
+    .catch(() => {
+      next(new BadRequestError('Пароль пользователя задан некорректно'));
+    });
 };
 
 module.exports.getUserList = (req, res, next) => {
