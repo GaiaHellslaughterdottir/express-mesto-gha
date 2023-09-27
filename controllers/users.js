@@ -4,6 +4,7 @@ const User = require('../models/user');
 const BadRequestError = require('../errors/bad-request');
 const NotFoundError = require('../errors/not-found-err');
 const UnauthorizedError = require('../errors/unauthorized');
+const ConflictError = require('../errors/conflict');
 
 module.exports.postUser = (req, res, next) => {
   const {
@@ -16,8 +17,10 @@ module.exports.postUser = (req, res, next) => {
     })
       .then((user) => res.send({ data: user }))
       .catch((err) => {
-        if (err.name === 'ValidationError' || 'MongoServerError') {
+        if (err.name === 'ValidationError') {
           next(new BadRequestError('Данные пользователя введены некорректно'));
+        } else if ('MongoServerError') {
+          next(new ConflictError('Пользователь с таким email уже существует'));
         } else {
           next(err);
         }

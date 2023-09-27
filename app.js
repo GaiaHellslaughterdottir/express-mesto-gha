@@ -9,6 +9,8 @@ const auth = require('./middlewares/auth');
 const UnauthorizedError = require('./errors/unauthorized');
 const BadRequestError = require('./errors/bad-request');
 const NotFoundError = require('./errors/not-found-err');
+const ConflictError = require('./errors/conflict');
+
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -49,6 +51,9 @@ app.use((err, req, res, next) => {
       .send({ message: err.message });
   } else if (err instanceof NotFoundError) {
     res.status(http2.constants.HTTP_STATUS_NOT_FOUND)
+      .send({ message: err.message });
+  } else if (err instanceof ConflictError) {
+    res.status(http2.constants.HTTP_STATUS_CONFLICT)
       .send({ message: err.message });
   } else {
     res.status(http2.constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
