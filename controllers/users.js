@@ -115,12 +115,13 @@ module.exports.login = (req, res, next) => {
       if (!bcrypt.compare(password, user.password)) {
         return Promise.reject(new Error('Неправильные почта или пароль'));
       }
-      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key',
+        { expiresIn: '7d' });
       return res.cookie('jwt', token, {
         maxAge: 604800000,
         httpOnly: true,
       })
-        .send({ message: 'Всё верно!' })
+        .send({ token: token })
         .end();
     })
     .catch((err) => {
