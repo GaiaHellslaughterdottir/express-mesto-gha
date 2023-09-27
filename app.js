@@ -11,7 +11,6 @@ const BadRequestError = require('./errors/bad-request');
 const NotFoundError = require('./errors/not-found-err');
 const ConflictError = require('./errors/conflict');
 
-
 const { PORT = 3000 } = process.env;
 const app = express();
 

@@ -16,8 +16,9 @@ module.exports.postUser = (req, res, next) => {
       name, about, avatar, email, password: hash,
     })
       .then((user) => {
-        const { password, ...userWithoutPassword } = user._doc;
-        res.send({ data: userWithoutPassword });
+        const newUser = user._doc;
+        delete newUser.password;
+        res.send({ data: newUser });
       })
       .catch((err) => {
         if (err.name === 'ValidationError') {
@@ -115,17 +116,20 @@ module.exports.login = (req, res, next) => {
       if (!bcrypt.compare(password, user.password)) {
         return Promise.reject(new Error('Неправильные почта или пароль'));
       }
-      const token = jwt.sign({ _id: user._id }, 'some-secret-key',
-        { expiresIn: '7d' });
+      const token = jwt.sign(
+        { _id: user._id },
+        'some-secret-key',
+        { expiresIn: '7d' },
+      );
       return res.cookie('jwt', token, {
         maxAge: 604800000,
         httpOnly: true,
       })
-        .send({ token: token })
+        .send({ token })
         .end();
     })
     .catch((err) => {
-      console.log(err)
+      console.log(err);
       next(new UnauthorizedError('Логин или пароль пользователя введены неверно'));
     });
 };
