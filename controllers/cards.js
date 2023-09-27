@@ -3,7 +3,7 @@ const BadRequestError = require('../errors/bad-request');
 const NotFoundError = require('../errors/not-found-err');
 const UnauthorizedError = require('../errors/unauthorized');
 
-module.exports.postCard = (req, res) => {
+module.exports.postCard = (req, res, next) => {
   const userId = req.user._id;
   const { name, link } = req.body;
 
@@ -11,21 +11,22 @@ module.exports.postCard = (req, res) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError('Данные карточки введены некорректно');
+        next(new BadRequestError('Данные карточки введены некорректно'));
+      } else {
+        next(err);
       }
-      throw err;
     });
 };
 
-module.exports.getCardList = (req, res) => {
+module.exports.getCardList = (req, res, next) => {
   Card.find({})
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      throw err;
+      next(err);
     });
 };
 
-module.exports.deleteCardById = (req, res) => {
+module.exports.deleteCardById = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if ((card) == null) {
@@ -38,13 +39,14 @@ module.exports.deleteCardById = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('ID карточки задан не корректно');
+        next(new BadRequestError('ID карточки задан не корректно'));
+      } else {
+        next(err);
       }
-      throw err;
     });
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
@@ -58,13 +60,14 @@ module.exports.likeCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('ID карточки задан не корректно');
+        next(new BadRequestError('ID карточки задан не корректно'));
+      } else {
+        next(err);
       }
-      throw err;
     });
 };
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
@@ -78,8 +81,9 @@ module.exports.dislikeCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('ID карточки задан не корректно');
+        next(new BadRequestError('ID карточки задан не корректно'));
+      } else {
+        next(err);
       }
-      throw err;
     });
 };

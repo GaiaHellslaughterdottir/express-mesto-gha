@@ -4,8 +4,9 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const BadRequestError = require('../errors/bad-request');
 const NotFoundError = require('../errors/not-found-err');
+const UnauthorizedError = require('../errors/unauthorized');
 
-module.exports.postUser = (req, res) => {
+module.exports.postUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
@@ -17,24 +18,23 @@ module.exports.postUser = (req, res) => {
       .then((user) => res.send({ data: user }))
       .catch((err) => {
         if (err.name === 'ValidationError') {
-          throw new BadRequestError('Данные пользователя введены некорректно');
+          next(new BadRequestError('Данные пользователя введены некорректно'));
+        } else {
+          next(err);
         }
-        throw err;
       }))
-    .catch(() => {
-      throw new BadRequestError();
-    });
+
 };
 
-module.exports.getUserList = (req, res) => {
+module.exports.getUserList = (req, res, next) => {
   User.find({})
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      throw err;
+      next(err);
     });
 };
 
-module.exports.getUserById = (req, res) => {
+module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (user == null) {
@@ -44,13 +44,14 @@ module.exports.getUserById = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('ID пользователя задан не корректно');
+        next(new BadRequestError('ID пользователя задан не корректно'));
+      } else {
+        next(err);
       }
-      throw err;
     });
 };
 
-module.exports.getCurrentUser = (req, res) => {
+module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (user == null) {
@@ -60,13 +61,14 @@ module.exports.getCurrentUser = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('ID пользователя задан не корректно');
+        next(new BadRequestError('ID пользователя задан не корректно'));
+      } else {
+        next(err);
       }
-      throw err;
     });
 };
 
-module.exports.updateProfile = (req, res) => {
+module.exports.updateProfile = (req, res, next) => {
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
@@ -74,13 +76,14 @@ module.exports.updateProfile = (req, res) => {
       res.send({ data: user })))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError('Данные пользователя введены некорректно');
+        newxt(new BadRequestError('Данные пользователя введены некорректно'));
+      } else {
+        next(err);
       }
-      throw err;
     });
 };
 
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
@@ -88,13 +91,14 @@ module.exports.updateAvatar = (req, res) => {
       res.send({ data: user })))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError('Данные пользователя введены некорректно');
+        next(new BadRequestError('Данные пользователя введены некорректно'));
+      } else {
+        next(err);
       }
-      throw err;
     });
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   User.findOne({ email }).select('+password')
     .then((user) => {
@@ -111,9 +115,7 @@ module.exports.login = (req, res) => {
       })
         .end();
     })
-    .catch((err) => {
-      res
-        .status(http2.constants.HTTP_STATUS_UNAUTHORIZED)
-        .send({ message: err.message });
+    .catch(() => {
+      next(new UnauthorizedError('Логин или пароль пользователя введены неверно'))
     });
 };
