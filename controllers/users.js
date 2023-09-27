@@ -2,6 +2,8 @@ const http2 = require('http2');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const BadRequestError = require('../errors/bad-request');
+const NotFoundError = require('../errors/not-found-err');
 
 module.exports.postUser = (req, res) => {
   const {
@@ -15,33 +17,52 @@ module.exports.postUser = (req, res) => {
       .then((user) => res.send({ data: user }))
       .catch((err) => {
         if (err.name === 'ValidationError') {
-          console.log(err);
-          return res.status(http2.constants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Данные пользователя введены некорректно' });
+          throw new BadRequestError('Данные пользователя введены некорректно');
         }
-        return res.status(http2.constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: `Произошла ошибка ${err.text}` });
+        throw err;
       }))
-    .catch((err) => res.status(http2.constants.HTTP_STATUS_BAD_REQUEST).send(err));
+    .catch(() => {
+      throw new BadRequestError();
+    });
 };
 
 module.exports.getUserList = (req, res) => {
   User.find({})
     .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(http2.constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: `Произошла ошибка ${err.text}` }));
+    .catch((err) => {
+      throw err;
+    });
 };
 
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (user == null) {
-        return res.status(http2.constants.HTTP_STATUS_NOT_FOUND).send({ message: 'Такой пользователь не найден' });
+        throw new NotFoundError('Такой пользователь не найден');
       }
       return res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(http2.constants.HTTP_STATUS_BAD_REQUEST).send({ message: 'ID пользователя задан не корректно' });
+        throw new BadRequestError('ID пользователя задан не корректно');
       }
-      return res.status(http2.constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: `Произошла ошибка ${err.text}` });
+      throw err;
+    });
+};
+
+module.exports.getCurrentUser = (req, res) => {
+  User.findById(req.user._id)
+    .then((user) => {
+      if (user == null) {
+        throw new NotFoundError('Такой пользователь не найден');
+      }
+      return res.send({ data: user });
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        throw new BadRequestError('ID пользователя задан не корректно');
+      }
+      throw err;
     });
 };
 
@@ -53,9 +74,9 @@ module.exports.updateProfile = (req, res) => {
       res.send({ data: user })))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(http2.constants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Данные пользователя введены некорректно' });
+        throw new BadRequestError('Данные пользователя введены некорректно');
       }
-      return res.status(http2.constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: `Произошла ошибка ${err.text}` });
+      throw err;
     });
 };
 
@@ -67,15 +88,15 @@ module.exports.updateAvatar = (req, res) => {
       res.send({ data: user })))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(http2.constants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Данные пользователя введены некорректно' });
+        throw new BadRequestError('Данные пользователя введены некорректно');
       }
-      return res.status(http2.constants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: `Произошла ошибка ${err.text}` });
+      throw err;
     });
 };
 
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
-  User.findOne({ email })
+  User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
         return Promise.reject(new Error('Неправильные почта или пароль'));
