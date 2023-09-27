@@ -1,4 +1,3 @@
-const http2 = require('http2');
 const jwt = require('jsonwebtoken');
 const UnauthorizedError = require('../errors/unauthorized');
 

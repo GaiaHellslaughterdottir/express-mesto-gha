@@ -1,4 +1,3 @@
-const http2 = require('http2');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
@@ -22,8 +21,7 @@ module.exports.postUser = (req, res, next) => {
         } else {
           next(err);
         }
-      }))
-
+      }));
 };
 
 module.exports.getUserList = (req, res, next) => {
@@ -76,7 +74,7 @@ module.exports.updateProfile = (req, res, next) => {
       res.send({ data: user })))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        newxt(new BadRequestError('Данные пользователя введены некорректно'));
+        next(new BadRequestError('Данные пользователя введены некорректно'));
       } else {
         next(err);
       }
@@ -116,6 +114,6 @@ module.exports.login = (req, res, next) => {
         .end();
     })
     .catch(() => {
-      next(new UnauthorizedError('Логин или пароль пользователя введены неверно'))
+      next(new UnauthorizedError('Логин или пароль пользователя введены неверно'));
     });
 };

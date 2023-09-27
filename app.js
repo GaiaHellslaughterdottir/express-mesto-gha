@@ -44,6 +44,7 @@ app.use((err, req, res, next) => {
     res.status(http2.constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
       .send({ message: err.message });
   }
+  next();
 });
 
 app.listen(PORT, () => {
