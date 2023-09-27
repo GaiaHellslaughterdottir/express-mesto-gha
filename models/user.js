@@ -23,7 +23,8 @@ const userSchema = new mongoose.Schema({
     trim: true,
     lowercase: true,
     unique: true,
-    required: 'Email address is required',
+    index: true,
+    required: true,
     validate: [validateEmail, 'Неправильный формат почты'],
   },
   password: {

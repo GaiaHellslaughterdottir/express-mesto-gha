@@ -16,7 +16,7 @@ module.exports.postUser = (req, res, next) => {
     })
       .then((user) => res.send({ data: user }))
       .catch((err) => {
-        if (err.name === 'ValidationError') {
+        if (err.name === 'ValidationError' || 'MongoServerError') {
           next(new BadRequestError('Данные пользователя введены некорректно'));
         } else {
           next(err);
