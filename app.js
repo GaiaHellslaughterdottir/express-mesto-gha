@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const process = require('process');
 const http2 = require('http2');
-const { errors } = require('celebrate');
+const { Joi, celebrate, errors } = require('celebrate');
 const { login, postUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const UnauthorizedError = require('./errors/unauthorized');
@@ -18,7 +18,15 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {});
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use('/signup', postUser);
+app.use('/signup', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string(),
+    email: Joi.string().required().min(2),
+    password: Joi.string().required(),
+  }),
+}), postUser);
 app.use('/signin', login);
 
 app.use(auth);
