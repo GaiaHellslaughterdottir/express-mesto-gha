@@ -120,9 +120,11 @@ module.exports.login = (req, res, next) => {
         maxAge: 604800000,
         httpOnly: true,
       })
+        .send({ message: 'Всё верно!' })
         .end();
     })
-    .catch(() => {
+    .catch((err) => {
+      console.log(err)
       next(new UnauthorizedError('Логин или пароль пользователя введены неверно'));
     });
 };

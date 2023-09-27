@@ -29,7 +29,12 @@ app.use('/signup', celebrate({
     password: Joi.string().required(),
   }),
 }), postUser);
-app.use('/signin', login);
+app.use('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().regex(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/),
+    password: Joi.string().required(),
+  }),
+}), login);
 
 app.use(auth);
 
