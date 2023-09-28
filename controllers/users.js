@@ -25,7 +25,7 @@ module.exports.postUser = (req, res, next) => {
         if (err.name === 'ValidationError') {
           next(new BadRequestError('Данные пользователя введены некорректно'));
         } else if ('MongoServerError') {
-          next(new ConflictError('Пользователь с таким email уже существует'));
+          next(new ConflictError('Пользователь с таким e-mail уже существует'));
         } else {
           next(err);
         }
