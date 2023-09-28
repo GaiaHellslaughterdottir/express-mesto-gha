@@ -130,6 +130,7 @@ module.exports.login = (req, res, next) => {
         .end();
     })
     .catch((err) => {
+      console.log(err);
       next(new UnauthorizedError('Логин или пароль пользователя введены неверно'));
     });
 };
